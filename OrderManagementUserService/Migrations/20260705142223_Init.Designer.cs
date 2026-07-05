@@ -13,7 +13,7 @@ using OrderManagementUserService.Database;
 namespace OrderManagementUserService.Migrations
 {
     [DbContext(typeof(UserServiceDbContext))]
-    [Migration("20260705091748_Init")]
+    [Migration("20260705142223_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -28,8 +28,10 @@ namespace OrderManagementUserService.Migrations
 
             modelBuilder.Entity("OrderManagementUserService.Models.Utente", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                    b.Property<Guid>("IdRaw")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
 
                     b.Property<string>("Ruolo")
                         .IsRequired()
@@ -66,7 +68,7 @@ namespace OrderManagementUserService.Migrations
                                 .HasColumnName("Nome");
                         });
 
-                    b.HasKey("Id");
+                    b.HasKey("IdRaw");
 
                     b.ToTable("Utenti");
 
