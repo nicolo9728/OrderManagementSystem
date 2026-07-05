@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="OrderManagementCommon/OrderManagementCommon.csproj" />
+  <Project Path="OrderManagementDeliveryService/OrderManagementDeliveryService.csproj" />
   <Project Path="OrderManagementProductService/OrderManagementProductService.csproj" />
   <Project Path="OrderManagementUserService/OrderManagementUserService.csproj" />
   <Project Path="OrderManagementViewmodels/OrderManagementViewmodels.csproj" />
