@@ -25,7 +25,7 @@ public static class ConfigureWebApp
                 string? idValue = accessor?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 string? role = accessor?.User.FindFirst(ClaimTypes.Role)?.Value;
 
-                return idValue != null && role != null ? new IdUtente(Guid.Parse(idValue)) : new IdUtenteEmpty(); 
+                return idValue != null && role != null ? IdUtente.GetIdUtenteFromGuidAndRole(Guid.Parse(idValue), role) : new IdUtenteEmpty(); 
             });
 
             builder.Services

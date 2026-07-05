@@ -32,7 +32,7 @@ public class ProductServiceDbContext(IConfiguration configuration) : OrderManage
 
             options.Property((a)=>a.Momento);
             options.Property((a)=>a.IdUtente)
-                .HasConversion((_)=>_.Id, (_)=>new IdUtente(_));
+                .HasConversion((_)=>_.Id, (_)=>new IdCustomer(_));
 
             options.Property((a)=>a.QuantitaAcquistata)
                 .HasConversion((_)=>_.Valore, (_)=>new Quantita(_));

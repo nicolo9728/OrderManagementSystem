@@ -44,6 +44,9 @@ public class ProdottiController(ProductServiceDbContext context, IdUtente idUten
 
         if (prodotto == null)
             return NotFound();
+        
+        if (idUtente is not IdCustomer)
+            return Forbid();
 
         Quantita quantitaDaAcquistare = new(form.Quantita);
 
@@ -52,7 +55,7 @@ public class ProdottiController(ProductServiceDbContext context, IdUtente idUten
 
         prodotto.RiduciScorta(quantitaDaAcquistare);
 
-        Acquisto acquisto = new(idUtente, prodotto.Codice, quantitaDaAcquistare);
+        Acquisto acquisto = new((IdCustomer)idUtente, prodotto.Codice, quantitaDaAcquistare);
 
         await context.AddAsync(acquisto);
         await context.SaveChangesAsync();

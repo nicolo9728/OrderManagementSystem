@@ -13,10 +13,13 @@ public class UserServiceDbContext(IConfiguration configuration) : OrderManagemen
     {
         modelBuilder.Entity<Utente>((options) =>
         {
-            options.HasKey((u) => u.Id);
+            options.Ignore((u)=>u.Id);
+            options.HasKey("IdRaw");
 
-            options.Property((u) => u.Id)
-                .HasConversion((_) => _.Id, (_) => new IdUtente(_));
+            options.Property<Guid>("IdRaw")
+                .HasColumnName("Id")
+                .UsePropertyAccessMode(PropertyAccessMode.PreferProperty);
+
 
             options.ComplexProperty((u) => u.Credenziali, (options) =>
             {
