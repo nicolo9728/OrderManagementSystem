@@ -1,0 +1,29 @@
+@page "/login"
+@inject ApiClientUser api
+@inject NavigationManager navigationManager
+
+<div class="form-container">
+    <form @onsubmit="EseguiLogin">
+        <h1>Login</h1>
+        <p>@errore</p>
+        <label>Username: <input type="text" required @bind="username"></label>
+        <label>Password: <input type="password" required @bind="password"></label>
+        <button>Login</button>
+    </form>
+</div>
+
+@code{
+    string errore = "", username = "", password = "";
+
+    public async Task EseguiLogin(){
+        try{
+            await api.PostAsync<dynamic, dynamic>("/Utente/Login", new {Username = username, Password = password});
+            
+            navigationManager.NavigateTo("/");
+            
+        }
+        catch(Exception){
+            errore = "Credenziali non valide";
+        }
+    }
+}
