@@ -1,6 +1,6 @@
-namespace OrderManagementCommon.Models;
+using OrderManagementCommon.Events;
 
-public abstract record DomainEvent;
+namespace OrderManagementCommon.Models;
 
 public abstract class AggregateRoot
 {
