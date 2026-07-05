@@ -32,7 +32,7 @@ public class ProdottiController(ProductServiceDbContext context, IdUtente idUten
     }
 
 
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [HttpPost("{id}/Acquista")]
     public async Task<IActionResult> AcquistaProdotto(Guid id, AcquistaProdottoForm form)
     {
