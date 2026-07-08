@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using OrderManagementCommon.Models;
+using OrderManagementCommon.Workers;
 
 namespace OrderManagementCommon;
 
@@ -53,9 +54,7 @@ public static class ConfigureWebApp
                     };
                 });
 
-            builder.Services.AddScoped<IDbConnection, NpgsqlConnection>((options) =>
-                new NpgsqlConnection(builder.Configuration.GetConnectionString("Postgresql")));
-
+            builder.Services.AddHostedService<EventPublisherWorker>();
 
             builder.Services.AddHttpContextAccessor();
         }
