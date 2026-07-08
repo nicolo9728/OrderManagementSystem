@@ -28,6 +28,7 @@ public abstract class OrderManagementDbContext(IConfiguration configuration) : D
             options.Property((d) => d.Tipo);
             options.Property((d) => d.Contenuto);
             options.Property((d) => d.IsCompletato);
+            options.Property((d) => d.MomentoCreazione);
         });
     }
 
@@ -46,10 +47,10 @@ public abstract class OrderManagementDbContext(IConfiguration configuration) : D
             .Select(DomainEventRow.FromEvent)
             .ToList();
 
-        if(eventsRow.Count > 0)
+        if (eventsRow.Count > 0)
             await Eventi.AddRangeAsync(eventsRow, cancellationToken);
 
-        
+
         return await base.SaveChangesAsync(cancellationToken);
     }
 }
