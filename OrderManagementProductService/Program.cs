@@ -6,7 +6,7 @@ using OrderManagementProductService.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ProductServiceDbContext>();
+builder.Services.AddDbContext<OrderManagementDbContext, ProductServiceDbContext>();
 builder.BuildCustomWebApp();
 
 var app = builder.Build();

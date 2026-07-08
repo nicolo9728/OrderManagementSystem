@@ -6,7 +6,7 @@ using OrderManagementUserService.Database;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.BuildCustomWebApp();
-builder.Services.AddDbContext<UserServiceDbContext>();
+builder.Services.AddDbContext<OrderManagementDbContext, UserServiceDbContext>();
 
 var app = builder.Build();
 
