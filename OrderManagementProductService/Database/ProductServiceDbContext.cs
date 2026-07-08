@@ -10,6 +10,7 @@ public class ProductServiceDbContext(IConfiguration configuration) : OrderManage
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Prodotto>((options) =>
         {
             options.HasKey((p)=>p.Codice);

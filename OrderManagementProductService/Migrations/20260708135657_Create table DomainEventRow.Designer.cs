@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OrderManagementCommon.Database;
@@ -11,9 +12,11 @@ using OrderManagementCommon.Database;
 namespace OrderManagementProductService.Migrations
 {
     [DbContext(typeof(ProductServiceDbContext))]
-    partial class ProductServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708135657_Create table DomainEventRow")]
+    partial class CreatetableDomainEventRow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,7 @@ namespace OrderManagementProductService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Eventi");
+                    b.ToTable("DomainEventRow");
                 });
 
             modelBuilder.Entity("OrderManagementProductService.Models.Acquisto", b =>

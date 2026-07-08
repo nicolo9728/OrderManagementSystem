@@ -11,6 +11,7 @@ public class UserServiceDbContext(IConfiguration configuration) : OrderManagemen
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Utente>((options) =>
         {
             options.Ignore((u)=>u.Id);
