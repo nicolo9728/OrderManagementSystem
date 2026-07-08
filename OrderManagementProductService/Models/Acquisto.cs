@@ -1,3 +1,4 @@
+using OrderManagementCommon.Events;
 using OrderManagementCommon.Models;
 using OrderManagementProductService.Models;
 
@@ -5,7 +6,9 @@ namespace OrderManagementProductService.Models;
 
 public record IdAcquisto(Guid Id);
 
-public class Acquisto
+public record AcquistoCreatoEvent(IdProdotto IdProdotto, IdCustomer IdCustomer, Quantita QuantitaAcquista) : DomainEvent;
+
+public class Acquisto : AggregateRoot
 {
     public IdAcquisto Id { get; } = new IdAcquisto(Guid.NewGuid());
     public DateTime Momento { get; } = DateTime.Now.ToUniversalTime();
@@ -18,6 +21,8 @@ public class Acquisto
         IdUtente = idUtente;
         IdProdotto = idProdotto;
         QuantitaAcquistata = acquistata;
+        
+        AddDomainEvent(new AcquistoCreatoEvent(idProdotto, idUtente, acquistata));
     }
 
     private Acquisto()
