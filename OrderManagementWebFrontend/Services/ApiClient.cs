@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
+using OrderManagementWebFrontend.Models;
 
 namespace OrderManagementWebFrontend.Services;
 
@@ -15,13 +16,28 @@ public abstract class ApiClient
             BaseAddress = new Uri(baseUrl)
         };
     }
+
+    private async Task HandleErrori(HttpResponseMessage res)
+    {
+        if (!res.IsSuccessStatusCode)
+        {
+            var problem = await res.Content.ReadFromJsonAsync<ProblemDetails>();
+            
+            if(problem == null)
+                throw new Exception("Errore interno del server");
+
+            throw new Exception(problem.Detail);
+        }
+    }
+
     public async Task<T> GetAsync<T>(string url)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
 
         var response = await _http.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        
+        await HandleErrori(response);
 
         return (await response.Content.ReadFromJsonAsync<T>())!;
     }
@@ -36,7 +52,8 @@ public abstract class ApiClient
         request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
 
         var response = await _http.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        
+        await HandleErrori(response);
 
         return await response.Content.ReadFromJsonAsync<TResponse>();
     }
@@ -53,6 +70,6 @@ public abstract class ApiClient
 
         var response = await _http.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        await HandleErrori(response);
     }
 }
