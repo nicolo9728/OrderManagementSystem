@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
@@ -92,7 +93,12 @@ public class EventConsumerWorker(IConfiguration configuration, IServiceProvider 
     private async Task GestisciEvento(string routerKey, string messageJson, CancellationToken cancellationToken)
     {
         Type domainEventType = typeof(DomainEvent);
-        Type? type = domainEventType.Assembly.GetType($"{domainEventType.Namespace}.{routerKey}");
+        var assembliesToScan = new[] { domainEventType.Assembly, Assembly.GetEntryAssembly() };
+
+        Type? type = assembliesToScan
+            .SelectMany(a => a!.GetTypes())
+            .FirstOrDefault(t => t.Name == routerKey && domainEventType.IsAssignableFrom(t));
+
 
         if (type == null)
             return;
