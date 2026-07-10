@@ -55,6 +55,7 @@ public static class ConfigureWebApp
                 });
 
             builder.Services.AddHostedService<EventPublisherWorker>();
+            builder.Services.AddHostedService<EventConsumerWorker>();
 
             builder.Services.AddHttpContextAccessor();
         }
