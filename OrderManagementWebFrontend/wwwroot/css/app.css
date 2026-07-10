@@ -131,3 +131,31 @@ form{
     flex-direction: column;
     align-items: center;
 }
+
+.window-container {
+    background-color: rgba(0, 0, 0, 0.534);
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+
+    top: 0;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.window{
+    background-color: white;
+    position: relative;
+    width: 80%;
+    min-width: 300px;
+    padding: 30px;
+}
+
+.window-close-button{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
