@@ -7,6 +7,7 @@ namespace OrderManagementDeliveryService.Database;
 
 public class DeliveryServiceDbContext(IConfiguration configuration) : OrderManagementDbContext(configuration)
 {
+    public DbSet<Order> Ordini { get; private set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -26,6 +27,11 @@ public class DeliveryServiceDbContext(IConfiguration configuration) : OrderManag
             options.Property((o) => o.Quantita)
                 .HasConversion((_) => _.Valore, (_) => new Quantita(_));
 
+            options.Property((o) => o.MomentoAcquisto);
+
+            options.HasIndex((o) => new { o.IdProdotto, o.IdUtente, o.MomentoAcquisto })
+                .IsUnique();
+
             options.Ignore((o) => o.Status);
 
             options.ComplexProperty<OrderStatusRappresentation>("OrderStatusRappresentation", (options) =>
@@ -41,7 +47,7 @@ public class DeliveryServiceDbContext(IConfiguration configuration) : OrderManag
 
                 options.Property(p => p.IdDeliveryGuyAssegnato)
                     .HasColumnName("IdDeliveryGuyAssegnato")
-                    .HasConversion<Guid?>((_)=>_ != null ? _.Id : null, (_)=> _ != null ? new IdDeliveryGuy(_.Value) : null);
+                    .HasConversion<Guid?>((_) => _ != null ? _.Id : null, (_) => _ != null ? new IdDeliveryGuy(_.Value) : null);
 
                 options.Property(p => p.Tipo)
                     .HasColumnName("Tipo");
