@@ -6,7 +6,6 @@ namespace OrderManagementProductService.Models;
 
 public record IdAcquisto(Guid Id);
 
-public record AcquistoCreatoEvent(IdProdotto IdProdotto, IdCustomer IdCustomer, Quantita QuantitaAcquista) : DomainEvent;
 
 public class Acquisto : AggregateRoot
 {
@@ -22,7 +21,7 @@ public class Acquisto : AggregateRoot
         IdProdotto = idProdotto;
         QuantitaAcquistata = acquistata;
         
-        AddDomainEvent(new AcquistoCreatoEvent(idProdotto, idUtente, acquistata));
+        AddDomainEvent(new AcquistoCreatoEvent(idProdotto, idUtente, acquistata, Momento));
     }
 
     private Acquisto()
