@@ -9,14 +9,16 @@ public class Order
     public IdOrder Id { get; }
     public IdProdotto IdProdotto { get; }
     public IdCustomer IdUtente { get; }
+    public DateTime MomentoAcquisto { get; }
     public Quantita Quantita { get; }
     public OrderStatus Status { get; private set; }
 
-    public Order(IdProdotto idProdotto, IdCustomer idUtente, Quantita quantita)
+    public Order(IdProdotto idProdotto, IdCustomer idUtente, Quantita quantita, DateTime momento)
     {
         IdProdotto = idProdotto;
         IdUtente = idUtente;
         Quantita = quantita;
+        MomentoAcquisto = momento;
         Status = new OrderEvaded();
         Id = new IdOrder(Guid.NewGuid());
     }
