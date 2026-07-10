@@ -8,6 +8,9 @@ namespace OrderManagementDeliveryService.Database;
 public class DeliveryServiceDbContext(IConfiguration configuration) : OrderManagementDbContext(configuration)
 {
     public DbSet<Order> Ordini { get; private set; }
+
+    public DbSet<DeliveryGuy> DeliveryGuys { get; private set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -53,6 +56,16 @@ public class DeliveryServiceDbContext(IConfiguration configuration) : OrderManag
                     .HasColumnName("Tipo");
             })
             .UsePropertyAccessMode(PropertyAccessMode.PreferProperty);
+        });
+
+        modelBuilder.Entity<DeliveryGuy>((options) =>
+        {
+            options.HasKey((o)=>o.Id);
+            
+            options.Property((o)=>o.Id)
+                .HasConversion((_)=>_.Id, (_)=> new IdDeliveryGuy(_));
+
+            options.Property((o)=>o.NumeroConsegneAttive);
         });
     }
 }
