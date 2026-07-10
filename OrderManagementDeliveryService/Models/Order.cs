@@ -1,10 +1,13 @@
+using OrderManagementCommon.Events;
 using OrderManagementCommon.Models;
 
 namespace OrderManagementDeliveryService.Models;
 
 public record IdOrder(Guid Valore);
 
-public class Order
+public record OrderCreatoEvent(IdOrder Id) : DomainEvent;
+
+public class Order: AggregateRoot
 {
     public IdOrder Id { get; }
     public IdProdotto IdProdotto { get; }
@@ -21,6 +24,8 @@ public class Order
         MomentoAcquisto = momento;
         Status = new OrderEvaded();
         Id = new IdOrder(Guid.NewGuid());
+
+        AddDomainEvent(new OrderCreatoEvent(Id));
     }
 
     private Order()
