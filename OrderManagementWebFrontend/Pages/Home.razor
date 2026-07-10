@@ -17,18 +17,50 @@
                 <tr id="@prodotto.IdProdotto.ToString()">
                     <td>@prodotto.Nome</td>
                     <td>@prodotto.QuantitaDisponibile</td>
-                    <td><button>Compra</button></td>
+                    <td><button @onclick="() => SelezionaProdotto(prodotto)">Compra</button></td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+@if (prodottoSelezionato != null)
+{
+    <div class="window-container">
+        <div class="window">
+            <button class="window-close-button" @onclick="()=>prodottoSelezionato = null">X</button>
+            <form @onsubmit="()=>Acquista()">
+                <h1>Acquista @prodottoSelezionato.Nome</h1>
+                <p>@errore</p>
+                <p>Quantita: <input type="number" @bind="quantitaSelezionata" required min="1"></p>
+                <button>Acquista</button>
+            </form>
+        </div>
+    </div>
+}
 
 @code {
     List<ProdottoViewModel> prodotti = [];
+    ProdottoViewModel? prodottoSelezionato = null;
+    string errore = "";
+    int quantitaSelezionata = 1;
 
     protected override async Task OnInitializedAsync()
     {
         prodotti = await api.GetAsync<List<ProdottoViewModel>>("/Prodotti");
+    }
+
+    public async Task SelezionaProdotto(ProdottoViewModel prodotto)
+    {
+        prodottoSelezionato = prodotto;
+    }
+
+    public async Task Acquista()
+    {
+        try{
+            await api.PostAsync<dynamic>($"/Prodotti/{prodottoSelezionato!.IdProdotto}/Acquista", new {Quantita = quantitaSelezionata});
+        }
+        catch(Exception err){
+            errore = err.Message;
+        }
     }
 }
