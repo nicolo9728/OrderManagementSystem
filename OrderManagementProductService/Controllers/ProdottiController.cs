@@ -10,14 +10,18 @@ namespace OrderManagementProductService.Controllers;
 
 
 public record ProdottoInserireForm(string Nome, int QuantitaDisponibile);
-public record AcquistaProdottoForm(int Quantita);
+public record AcquistaProdottoForm(int Quantita, string Indirizzo);
 
 [ApiController]
 [Route("[controller]")]
 public class ProdottiController(ProductServiceDbContext context, IdUtente idUtente) : ControllerBase
 {
     public async Task<IActionResult> GetProdotti()
-        => Ok(context.Prodotti.AsNoTracking().Select((p)=> new ProdottoViewModel(p.Codice.Id, p.Nome, p.QuantitaDisponibile.Valore)));
+        => Ok(
+            context.Prodotti
+            .OrderBy(p => p.Nome)
+            .Select(p => new ProdottoViewModel(p.Codice.Id, p.Nome, p.QuantitaDisponibile.Valore))
+            .ToList());
 
 
     [Authorize(Roles = "Admin")]
@@ -44,7 +48,7 @@ public class ProdottiController(ProductServiceDbContext context, IdUtente idUten
 
         if (prodotto == null)
             return NotFound();
-        
+
         if (idUtente is not IdCustomer)
             return Forbid();
 
@@ -54,8 +58,9 @@ public class ProdottiController(ProductServiceDbContext context, IdUtente idUten
             return Problem("Prodotto non disponibile");
 
         prodotto.RiduciScorta(quantitaDaAcquistare);
+        
 
-        Acquisto acquisto = new((IdCustomer)idUtente, prodotto.Codice, quantitaDaAcquistare);
+        Acquisto acquisto = new((IdCustomer)idUtente, prodotto.Codice, quantitaDaAcquistare, new Indirizzo(form.Indirizzo));
 
         await context.AddAsync(acquisto);
         await context.SaveChangesAsync();

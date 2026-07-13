@@ -15,13 +15,13 @@ public class Acquisto : AggregateRoot
     public IdProdotto IdProdotto { get; }
     public Quantita QuantitaAcquistata { get; }
 
-    public Acquisto(IdCustomer idUtente, IdProdotto idProdotto, Quantita acquistata)
+    public Acquisto(IdCustomer idUtente, IdProdotto idProdotto, Quantita acquistata, Indirizzo IndirizzoCorrente)
     {
         IdUtente = idUtente;
         IdProdotto = idProdotto;
         QuantitaAcquistata = acquistata;
         
-        AddDomainEvent(new AcquistoCreatoEvent(idProdotto, idUtente, acquistata, Momento));
+        AddDomainEvent(new AcquistoCreatoEvent(idProdotto, idUtente, acquistata, Momento, IndirizzoCorrente));
     }
 
     private Acquisto()

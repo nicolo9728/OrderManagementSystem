@@ -20,9 +20,6 @@ public class OrderCreatoConsumer(DeliveryServiceDbContext context) : IEventConsu
     {
         Order? order = await context.Ordini.Where((o)=>o.Id == arg.Id).FirstOrDefaultAsync(cancellationToken);
 
-        if(order?.Status is not OrderEvaded)
-            return;
-
         if(order == null)
             return;
         

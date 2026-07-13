@@ -19,7 +19,11 @@ public class EventPublisherWorker(IConfiguration configuration, IServiceProvider
         };
 
         using var connection = await factory.CreateConnectionAsync(stoppingToken);
-        using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
+        var channel = await connection.CreateChannelAsync(
+            new CreateChannelOptions(
+                publisherConfirmationsEnabled: true,
+                publisherConfirmationTrackingEnabled: true), stoppingToken);
+
 
         await channel.ExchangeDeclareAsync(
             exchange: configuration["RabbitMQ:ExchangeName"]!,

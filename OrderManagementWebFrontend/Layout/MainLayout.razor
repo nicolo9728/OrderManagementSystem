@@ -1,9 +1,22 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
 <div class="page">
     <header>
         <div class="header-title"><NavLink href="/"><h1>App E-commerce</h1></NavLink></div>
         <nav class="header-navigation">
-            <NavLink href="Login">Login</NavLink>
+            <AuthorizeView Roles="DeliveryGuy">
+                <Authorized>
+                    <NavLink href="listaConsegne">Lista consegne</NavLink>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView>
+                <Authorized>
+                    <NavLink href="logout">Logout</NavLink>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink href="Login">Login</NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </nav>
     </header>
     <main>

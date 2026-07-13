@@ -1,6 +1,9 @@
 @page "/login"
+@using Microsoft.AspNetCore.Components.Authorization;
+@using OrderManagementWebFrontend.Authentication;
 @inject ApiClientUser api
 @inject NavigationManager navigationManager
+@inject AuthenticationStateProvider auth;
 
 <div class="form-container">
     <form @onsubmit="EseguiLogin">
@@ -17,10 +20,10 @@
 
     public async Task EseguiLogin(){
         try{
-            await api.PostAsync<dynamic, dynamic>("/Utente/Login", new {Username = username, Password = password});
-            
-            navigationManager.NavigateTo("/");
-            
+            if(auth is CustomAuthStateProvider provider){
+                await provider.Login(username, password);
+                navigationManager.NavigateTo("/");
+            }
         }
         catch(Exception){
             errore = "Credenziali non valide";

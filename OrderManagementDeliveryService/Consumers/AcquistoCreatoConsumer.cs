@@ -8,7 +8,7 @@ public class AcquistoCreatoConsumer(DeliveryServiceDbContext context) : IEventCo
 {
     public async Task Consume(AcquistoCreatoEvent arg, CancellationToken cancellationToken)
     {
-        Order order = new(arg.IdProdotto, arg.IdCustomer, arg.QuantitaAcquista, arg.MomentoAcquisto);
+        Order order = new(arg.IdProdotto, arg.IdCustomer, arg.QuantitaAcquista, arg.MomentoAcquisto, arg.IndirizzoSpedizione);
 
         await context.Ordini.AddAsync(order, cancellationToken);
         

@@ -3,13 +3,18 @@ using OrderManagementCommon.Models;
 namespace OrderManagementDeliveryService.Models;
 
 public interface IOrderCancellabile { }
+public interface IOrderCompletato { }
+public interface IOrderAssigned
+{
+    public IdDeliveryGuy? IdDeliveryGuy { get; }
+}
 
 public abstract record OrderStatus;
 
 public record OrderEvaded() : OrderStatus, IOrderCancellabile;
-public record OrderAssegnato(IdDeliveryGuy IdDeliveryGuy) : OrderStatus, IOrderCancellabile;
-public record OrderCanceled(DateTime Momento, string Ragione, IdDeliveryGuy? IdDeliveryGuy) : OrderStatus;
-public record OrderDelivered(DateTime Momento, IdDeliveryGuy IdDeliveryGuy) : OrderStatus;
+public record OrderAssegnato(IdDeliveryGuy IdDeliveryGuy) : OrderStatus, IOrderCancellabile, IOrderAssigned;
+public record OrderCanceled(DateTime Momento, string Ragione, IdDeliveryGuy? IdDeliveryGuy) : OrderStatus, IOrderAssigned, IOrderCompletato;
+public record OrderDelivered(DateTime Momento, IdDeliveryGuy IdDeliveryGuy) : OrderStatus, IOrderAssigned, IOrderCompletato;
 
 
 public static class DeliveryStatusStateMachine

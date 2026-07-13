@@ -31,11 +31,17 @@ public class DeliveryServiceDbContext(IConfiguration configuration) : OrderManag
                 .HasConversion((_) => _.Valore, (_) => new Quantita(_));
 
             options.Property((o) => o.MomentoAcquisto);
+            
+            options.Property((o)=>o.IsDeliveryGuyNotified);
 
             options.HasIndex((o) => new { o.IdProdotto, o.IdUtente, o.MomentoAcquisto })
                 .IsUnique();
 
+            options.Property((o)=>o.Indirizzo)
+                .HasConversion((_)=>_.Valore, (_)=>new Indirizzo(_));
+
             options.Ignore((o) => o.Status);
+            options.Ignore((o)=>o.IdDeliveryGuyAssigned);
 
             options.ComplexProperty<OrderStatusRappresentation>("OrderStatusRappresentation", (options) =>
             {

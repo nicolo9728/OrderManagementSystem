@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<OrderManagementDbContext, DeliveryServiceDbContext>();
 builder.Services.AddScoped<IEventConsumer<AcquistoCreatoEvent>, AcquistoCreatoConsumer>();
 builder.Services.AddScoped<IEventConsumer<OrderCreatoEvent>, OrderCreatoConsumer>();
+builder.Services.AddScoped<IEventConsumer<OrderCompletatoEvent>, OrderCompletatoConsumer>();
 
 builder.BuildCustomWebApp();
 

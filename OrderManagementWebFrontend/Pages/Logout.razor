@@ -1,0 +1,20 @@
+@page "/logout"
+@using Microsoft.AspNetCore.Components.Authorization;
+@using OrderManagementWebFrontend.Authentication;
+
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider auth;
+
+
+<h1>Logout page</h1>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (auth is CustomAuthStateProvider provider)
+        {
+            await provider.Logout();
+            navigationManager.NavigateTo("/");
+        }
+    }
+}

@@ -21,7 +21,7 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginForm form)
     {
-        var utente = await context.Utenti.Where((u)=>u.Credenziali.Username == form.Username).FirstOrDefaultAsync();
+        var utente = await context.Utenti.Where((u) => u.Credenziali.Username == form.Username).FirstOrDefaultAsync();
         if (utente is null)
             return Unauthorized("Credential not valid");
 
@@ -43,14 +43,30 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
         return Ok(new { Message = "Ok" });
     }
 
+    [HttpPost("Logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddDays(-1) // Scadenza nel passato
+        };
+
+        httpContext.HttpContext!.Response.Cookies.Delete("auth", cookieOptions);
+
+        return Ok();
+    }
+
     [HttpGet("UtenteLoggato")]
     [Authorize]
     public async Task<IActionResult> GetUtenteLoggato() => Ok(
         await context
                 .Utenti
-                .Select((u)=> new {u.Id, u.Credenziali.Username, Ruolo = EF.Property<string>(u, "Ruolo")})
-                .Where((u)=>u.Id == idUtenteLoggato)
-                .Select((u)=>new UtenteLoggatoViewModel(u.Id.Id, u.Username, u.Ruolo))
+                .Select((u) => new { Id = EF.Property<Guid>(u, "IdRaw"), u.Credenziali.Username, Ruolo = EF.Property<string>(u, "Ruolo") })
+                .Where((u) => u.Id == idUtenteLoggato.Id)
+                .Select((u) => new UtenteLoggatoViewModel(u.Id, u.Username, u.Ruolo))
                 .FirstOrDefaultAsync()
     );
 

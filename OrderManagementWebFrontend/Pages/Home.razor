@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
 @using OrderManagementViewmodels.Prodotti
 @inject ApiClientProdotti api;
 
@@ -17,7 +18,16 @@
                 <tr id="@prodotto.IdProdotto.ToString()">
                     <td>@prodotto.Nome</td>
                     <td>@prodotto.QuantitaDisponibile</td>
-                    <td><button @onclick="() => SelezionaProdotto(prodotto)">Compra</button></td>
+                    <td>
+                        <AuthorizeView Roles="Customer">
+                            <Authorized>
+                                <button @onclick="() => SelezionaProdotto(prodotto)">Compra</button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <button disabled>Loggati come customer</button>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -32,6 +42,7 @@
                 <h1>Acquista @prodottoSelezionato.Nome</h1>
                 <p>@errore</p>
                 <p>Quantita: <input type="number" @bind="quantitaSelezionata" required min="1"></p>
+                <p>Indirizzo spedizione: <input type="text" required @bind="indirizzo"></p>
                 <button>Acquista</button>
             </form>
         </div>
@@ -42,11 +53,15 @@
     List<ProdottoViewModel> prodotti = [];
     ProdottoViewModel? prodottoSelezionato = null;
     string errore = "";
+    string indirizzo = "";
     int quantitaSelezionata = 1;
+
+    private async Task RefreshProdotti()
+        => prodotti = await api.GetAsync<List<ProdottoViewModel>>("/Prodotti");
 
     protected override async Task OnInitializedAsync()
     {
-        prodotti = await api.GetAsync<List<ProdottoViewModel>>("/Prodotti");
+       await RefreshProdotti();
     }
 
     public async Task SelezionaProdotto(ProdottoViewModel prodotto)
@@ -57,7 +72,12 @@
     public async Task Acquista()
     {
         try{
-            await api.PostAsync<dynamic>($"/Prodotti/{prodottoSelezionato!.IdProdotto}/Acquista", new {Quantita = quantitaSelezionata});
+            await api.PostAsync<dynamic>($"/Prodotti/{prodottoSelezionato!.IdProdotto}/Acquista", new {
+                Quantita = quantitaSelezionata,
+                Indirizzo = indirizzo
+            });
+            prodottoSelezionato = null;
+            await RefreshProdotti();
         }
         catch(Exception err){
             errore = err.Message;

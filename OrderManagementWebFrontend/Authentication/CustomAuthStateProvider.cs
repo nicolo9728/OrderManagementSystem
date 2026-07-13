@@ -29,4 +29,17 @@ public class CustomAuthStateProvider(ApiClientUser api) : AuthenticationStatePro
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
     }
+
+    public async Task Login(string username, string password)
+    {
+        await api.PostAsync<dynamic, dynamic>("/Utente/Login", new {Username = username, Password = password});
+
+        this.NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
+
+    public async Task Logout()
+    {
+        await api.PostAsync<dynamic>("/Utente/Logout", new {});
+        this.NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
 }
