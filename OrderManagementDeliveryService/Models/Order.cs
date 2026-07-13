@@ -49,11 +49,11 @@ public class Order : AggregateRoot
     public bool CanCancel => Status is OrderEvaded;
     public bool CanAssegnare => Status is OrderEvaded;
 
-    public void TryCancel(DateTime now, string ragione)
+    public void TryCancel(DateTime now)
     {
         if (Status is IOrderCancellabile orderCancellabile)
         {
-            Status = orderCancellabile.Cancel(now, ragione);
+            Status = orderCancellabile.Cancel(now);
             AddDomainEvent(new OrderCompletatoEvent(Id));
         }
     }

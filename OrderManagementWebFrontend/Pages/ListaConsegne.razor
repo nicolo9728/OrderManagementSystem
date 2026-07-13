@@ -1,8 +1,63 @@
 @page "/listaConsegne"
+@using OrderManagementViewmodels.Ordini
+@inject ApiClientDelivery deliveryApi;
 
 <h1>Lista consegne</h1>
-<table>
-    <thead>
-        <th></th>
-    </thead>
-</table>
+<div class="table-container">
+    <table>
+        <thead>
+            <th>Id</th>
+            <th>Id Prodotto</th>
+            <th>Quantita</th>
+            <th>Indirizzo</th>
+            <th>Status</th>
+            <th>Momento acquisto</th>
+            <th>Operazioni</th>
+        </thead>
+        <tbody>
+            @foreach (var order in ordini)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.IdProdotto</td>
+                    <td>@order.Quantita</td>
+                    <td>@order.Indirizzo</td>
+                    <td>@order.MomentoAcquisto</td>
+                    <td>@order.Status</td>
+                    <td>
+                        @if (order.Status == "OrderAssegnato")
+                        {
+                            <div>
+                                <button @onclick="()=>Consegna(order.Id)">Consegna</button>
+                                <button @onclick="()=>Cancella(order.Id)">Cancella</button>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    List<OrderViewModel> ordini = new List<OrderViewModel>();
+
+    private async Task RefreshOrdini()
+        => ordini = await deliveryApi.GetAsync<List<OrderViewModel>>("/Order");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshOrdini();
+    }
+
+    public async Task Consegna(Guid id){
+        await deliveryApi.PostAsync<dynamic>($"/Order/{id}/Consegna", new {});
+        await RefreshOrdini();
+    }
+
+    public async Task Cancella(Guid id){
+        await deliveryApi.PostAsync<dynamic>($"/Order/{id}/Cancella", new {});
+        await RefreshOrdini();
+    }
+}

@@ -51,9 +51,6 @@ public class DeliveryServiceDbContext(IConfiguration configuration) : OrderManag
                 options.Property(p => p.MomentoConsegna)
                     .HasColumnName("MomentoConsegna");
 
-                options.Property(p => p.RagioneCancellazione)
-                    .HasColumnName("RagioneCancellazione");
-
                 options.Property(p => p.IdDeliveryGuyAssegnato)
                     .HasColumnName("IdDeliveryGuyAssegnato")
                     .HasConversion<Guid?>((_) => _ != null ? _.Id : null, (_) => _ != null ? new IdDeliveryGuy(_.Value) : null);

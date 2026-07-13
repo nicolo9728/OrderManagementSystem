@@ -10,6 +10,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped<ApiClientUser>();
 builder.Services.AddScoped<ApiClientProdotti>();
+builder.Services.AddScoped<ApiClientDelivery>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 builder.Services.AddAuthorizationCore();
