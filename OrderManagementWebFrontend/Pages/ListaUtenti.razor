@@ -1,0 +1,37 @@
+@page "/listaUtenti"
+@using OrderManagementViewmodels.Utenti;
+@inject ApiClientUser utentiApi;
+
+<h1>Lista utenti</h1>
+<div class="table-container">
+    <table>
+        <thead>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Ruolo</th>
+        </thead>
+        <tbody>
+            @foreach(var utente in utenti){
+                <tr>
+                    <td>@utente.Id</td>
+                    <td>@utente.Username</td>
+                    <td>@utente.Ruolo</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code{
+    List<UtenteLoggatoViewModel> utenti = new List<UtenteLoggatoViewModel>();
+    bool aggiungiUtenteBanner = true;
+
+    private async Task RefreshUtenti()
+        => utenti = await utentiApi.GetAsync<List<UtenteLoggatoViewModel>>("/Utente");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshUtenti();
+    }
+}

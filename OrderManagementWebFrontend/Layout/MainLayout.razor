@@ -9,6 +9,11 @@
                     <NavLink href="listaConsegne">Lista consegne</NavLink>
                 </Authorized>
             </AuthorizeView>
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <NavLink href="listaUtenti">Lista utenti</NavLink>
+                </Authorized>
+            </AuthorizeView>
             <AuthorizeView>
                 <Authorized>
                     <NavLink href="logout">Logout</NavLink>
