@@ -17,6 +17,7 @@ namespace OrderManagementUserService.Controllers;
 public class UtenteController(UserServiceDbContext context, IConfiguration configuration, IHttpContextAccessor httpContext, IdUtente idUtenteLoggato) : ControllerBase
 {
     public record LoginForm(string Username, string Password);
+    public record RegistrazioneForm(string Username, string Password, string Nome, string Cognome);
 
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginForm form)
@@ -100,4 +101,25 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
                 .Select((u) => new UtenteLoggatoViewModel(EF.Property<Guid>(u, "IdRaw"), u.Credenziali.Username, EF.Property<string>(u, "Ruolo")))
                 .ToListAsync()
     );
+    
+    [HttpPost("/Utenti/Registrazione")]
+    public async Task<IActionResult> Registrazione(RegistrazioneForm form)
+    {
+        using var transaction = await context.Database.BeginTransactionAsync();
+        bool usernameUsed = await context.Utenti.Where((u)=>u.Credenziali.Username == form.Username).AnyAsync();
+
+        if(usernameUsed)
+            return Problem("Username gia usato");
+        
+        Customer customer = new(
+            new Credenziali(form.Username, Password.CreatePasswordFromString(form.Password)),
+            new Generalita(form.Nome, form.Cognome));
+        
+        await context.Utenti.AddAsync(customer);
+
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return Ok();
+    }
 }

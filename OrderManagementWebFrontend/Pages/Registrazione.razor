@@ -1,0 +1,30 @@
+@page "/registrazione"
+@inject ApiClientUser apiUtenti;
+@inject NavigationManager nav;
+
+<div class="form-container">
+    <form @onsubmit="EseguiRegistrazione">
+        <p>@errore</p>
+        <h1>Registrazione</h1>
+        <p>Username: <input type="text" @bind="username" required></p>
+        <p>Password: <input type="password" @bind="password" required></p>
+        <p>Nome: <input type="text" @bind="nome" required></p>
+        <p>Cognome: <input type="text" @bind="cognome" required/></p>
+        <button>Registrazione</button>
+    </form>
+</div>
+
+@code{
+    string errore = "";
+    string username = "", password = "", nome = "", cognome = "";
+
+    public async Task EseguiRegistrazione(){
+        try{
+            await apiUtenti.PostAsync("/Utenti/Registrazione", new {Username = username, Password = password, Nome = nome, Cognome = cognome});
+            nav.NavigateTo("/");
+        }
+        catch(Exception err){
+            errore = err.Message;
+        }
+    }
+}
