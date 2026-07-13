@@ -3,6 +3,7 @@
 @inject ApiClientUser utentiApi;
 
 <h1>Lista utenti</h1>
+<button @onclick="ApriBanner">Aggiungi utente</button>
 <div class="table-container">
     <table>
         <thead>
@@ -11,7 +12,8 @@
             <th>Ruolo</th>
         </thead>
         <tbody>
-            @foreach(var utente in utenti){
+            @foreach (var utente in utenti)
+            {
                 <tr>
                     <td>@utente.Id</td>
                     <td>@utente.Username</td>
@@ -22,13 +24,77 @@
     </table>
 </div>
 
+@if (aggiungiUtenteBanner)
+{
+    <div class="window-container">
+        <div class="window">
+            <button class="window-close-button" @onclick="ChiudiBanner">X</button>
+            <form @onsubmit="AggiungiUtente">
+                <h1>Aggiungi utente</h1>
+                <p>@errore</p>
+                <p>Username: <input type="text" @bind="username" required></p>
+                <p>Password: <input type="password" @bind="password" required></p>
+                <p>Nome: <input type="text" @bind="nome" required></p>
+                <p>Cognome: <input type="text" @bind="cognome" required></p>
+                <p>Tipo:
+                    <InputRadioGroup @bind-Value="tipo" >
+                        <div>
+                            <label>
+                                <InputRadio Value='"Admin"' required /> Admin
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <InputRadio Value='"Customer"' required /> Customer
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <InputRadio Value='"DeliveryGuy"' required /> DeliveryGuy
+                            </label>
+                        </div>
+                    </InputRadioGroup>
+                </p>
+                <button>Aggiungi</button>
+            </form>
+        </div>
+    </div>
+}
 
-@code{
+
+@code {
     List<UtenteLoggatoViewModel> utenti = new List<UtenteLoggatoViewModel>();
-    bool aggiungiUtenteBanner = true;
+    string username = "", password = "", nome = "", cognome = "", tipo = "", errore = "";
+    bool aggiungiUtenteBanner = false;
 
     private async Task RefreshUtenti()
         => utenti = await utentiApi.GetAsync<List<UtenteLoggatoViewModel>>("/Utente");
+
+    public void ApriBanner()
+        => aggiungiUtenteBanner = true;
+
+    public void ChiudiBanner()
+        => aggiungiUtenteBanner = false;
+
+    public async Task AggiungiUtente()
+    {
+        try
+        {
+            await utentiApi.PostAsync("/Utente", new
+            {
+                Username = username,
+                Password = password,
+                Nome = nome,
+                Cognome = cognome,
+                Tipo = tipo
+            });
+
+            await RefreshUtenti();
+        }
+        catch(Exception err){
+            errore = err.Message;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

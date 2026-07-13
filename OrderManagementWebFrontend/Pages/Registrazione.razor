@@ -20,7 +20,7 @@
 
     public async Task EseguiRegistrazione(){
         try{
-            await apiUtenti.PostAsync("/Utenti/Registrazione", new {Username = username, Password = password, Nome = nome, Cognome = cognome});
+            await apiUtenti.PostAsync("/Utente/Registrazione", new {Username = username, Password = password, Nome = nome, Cognome = cognome});
             nav.NavigateTo("/");
         }
         catch(Exception err){

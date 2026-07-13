@@ -18,6 +18,7 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
 {
     public record LoginForm(string Username, string Password);
     public record RegistrazioneForm(string Username, string Password, string Nome, string Cognome);
+    public record RegistrazioneFormAdmin(string Username, string Password, string Nome, string Cognome, string Tipo);
 
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginForm form)
@@ -101,20 +102,63 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
                 .Select((u) => new UtenteLoggatoViewModel(EF.Property<Guid>(u, "IdRaw"), u.Credenziali.Username, EF.Property<string>(u, "Ruolo")))
                 .ToListAsync()
     );
-    
-    [HttpPost("/Utenti/Registrazione")]
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CaricaUtenteAdmin(RegistrazioneFormAdmin form)
+    {
+        using var transaction = await context.Database.BeginTransactionAsync();
+        bool usernameUsed = await context.Utenti.Where((u) => u.Credenziali.Username == form.Username).AnyAsync();
+
+        if (usernameUsed)
+            return Problem("Username gia usato");
+
+        Utente? utente = null;
+        if (form.Tipo == "Admin")
+            utente = new Admin(
+                new Credenziali(
+                    form.Username, 
+                    Password.CreatePasswordFromString(form.Password)), 
+                new Generalita(form.Nome, form.Cognome));
+        
+        if(form.Tipo == "Customer")
+            utente = new Customer(
+                new Credenziali(
+                    form.Username, 
+                    Password.CreatePasswordFromString(form.Password)), 
+                new Generalita(form.Nome, form.Cognome));
+        
+        if(form.Tipo == "DeliveryGuy")
+            utente = new DeliveryGuy(
+                new Credenziali(
+                    form.Username, 
+                    Password.CreatePasswordFromString(form.Password)), 
+                new Generalita(form.Nome, form.Cognome));
+        
+        if(utente == null)
+            return BadRequest();
+        
+        await context.Utenti.AddAsync(utente);
+        await context.SaveChangesAsync();
+
+        await transaction.CommitAsync();
+        
+        return Ok();
+    }
+
+    [HttpPost("Registrazione")]
     public async Task<IActionResult> Registrazione(RegistrazioneForm form)
     {
         using var transaction = await context.Database.BeginTransactionAsync();
-        bool usernameUsed = await context.Utenti.Where((u)=>u.Credenziali.Username == form.Username).AnyAsync();
+        bool usernameUsed = await context.Utenti.Where((u) => u.Credenziali.Username == form.Username).AnyAsync();
 
-        if(usernameUsed)
+        if (usernameUsed)
             return Problem("Username gia usato");
-        
+
         Customer customer = new(
             new Credenziali(form.Username, Password.CreatePasswordFromString(form.Password)),
             new Generalita(form.Nome, form.Cognome));
-        
+
         await context.Utenti.AddAsync(customer);
 
         await context.SaveChangesAsync();
