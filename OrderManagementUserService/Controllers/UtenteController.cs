@@ -91,4 +91,13 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUtenti() => Ok(
+        await context
+                .Utenti
+                .Select((u) => new UtenteLoggatoViewModel(EF.Property<Guid>(u, "IdRaw"), u.Credenziali.Username, EF.Property<string>(u, "Ruolo")))
+                .ToListAsync()
+    );
 }
