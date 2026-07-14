@@ -10,6 +10,8 @@
             <th>Id</th>
             <th>Username</th>
             <th>Ruolo</th>
+            <th>Nome</th>
+            <th>Cognome</th>
         </thead>
         <tbody>
             @foreach (var utente in utenti)
@@ -18,6 +20,8 @@
                     <td>@utente.Id</td>
                     <td>@utente.Username</td>
                     <td>@utente.Ruolo</td>
+                    <td>@utente.Nome</td>
+                    <td>@utente.Cognome</td>
                 </tr>
             }
         </tbody>
@@ -63,12 +67,12 @@
 
 
 @code {
-    List<UtenteLoggatoViewModel> utenti = new List<UtenteLoggatoViewModel>();
+    List<UtenteViewModel> utenti = [];
     string username = "", password = "", nome = "", cognome = "", tipo = "", errore = "";
     bool aggiungiUtenteBanner = false;
 
     private async Task RefreshUtenti()
-        => utenti = await utentiApi.GetAsync<List<UtenteLoggatoViewModel>>("/Utente");
+        => utenti = await utentiApi.GetAsync<List<UtenteViewModel>>("/Utente");
 
     public void ApriBanner()
         => aggiungiUtenteBanner = true;

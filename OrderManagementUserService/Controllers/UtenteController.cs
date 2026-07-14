@@ -99,7 +99,12 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
     public async Task<IActionResult> GetUtenti() => Ok(
         await context
                 .Utenti
-                .Select((u) => new UtenteLoggatoViewModel(EF.Property<Guid>(u, "IdRaw"), u.Credenziali.Username, EF.Property<string>(u, "Ruolo")))
+                .Select((u) => new UtenteViewModel(
+                    EF.Property<Guid>(u, "IdRaw"),
+                    u.Credenziali.Username,
+                    EF.Property<string>(u, "Ruolo"),
+                    u.Generalita.Nome,
+                    u.Generalita.Cognome))
                 .ToListAsync()
     );
 
@@ -117,32 +122,32 @@ public class UtenteController(UserServiceDbContext context, IConfiguration confi
         if (form.Tipo == "Admin")
             utente = new Admin(
                 new Credenziali(
-                    form.Username, 
-                    Password.CreatePasswordFromString(form.Password)), 
+                    form.Username,
+                    Password.CreatePasswordFromString(form.Password)),
                 new Generalita(form.Nome, form.Cognome));
-        
-        if(form.Tipo == "Customer")
+
+        if (form.Tipo == "Customer")
             utente = new Customer(
                 new Credenziali(
-                    form.Username, 
-                    Password.CreatePasswordFromString(form.Password)), 
+                    form.Username,
+                    Password.CreatePasswordFromString(form.Password)),
                 new Generalita(form.Nome, form.Cognome));
-        
-        if(form.Tipo == "DeliveryGuy")
+
+        if (form.Tipo == "DeliveryGuy")
             utente = new DeliveryGuy(
                 new Credenziali(
-                    form.Username, 
-                    Password.CreatePasswordFromString(form.Password)), 
+                    form.Username,
+                    Password.CreatePasswordFromString(form.Password)),
                 new Generalita(form.Nome, form.Cognome));
-        
-        if(utente == null)
+
+        if (utente == null)
             return BadRequest();
-        
+
         await context.Utenti.AddAsync(utente);
         await context.SaveChangesAsync();
 
         await transaction.CommitAsync();
-        
+
         return Ok();
     }
 
