@@ -35,6 +35,7 @@ public abstract class OrderManagementDbContext(IConfiguration configuration) : D
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var test = ChangeTracker.Entries<AggregateRoot>().ToList();
         var eventsRow = ChangeTracker.Entries<AggregateRoot>()
             .Select((x) => x.Entity)
             .Where((x) => x.DomainEvents.Count > 0)

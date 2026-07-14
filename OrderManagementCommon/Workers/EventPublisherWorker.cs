@@ -59,24 +59,27 @@ public class EventPublisherWorker(IConfiguration configuration, IServiceProvider
             .Take(20)
             .ToList();
 
-        foreach (var evento in eventiPendenti)
+        if (eventiPendenti.Count > 0)
         {
-            await channel.BasicPublishAsync(
-                exchange: configuration["RabbitMQ:ExchangeName"]!,
-                routingKey: evento.Tipo,
-                mandatory: true,
-                basicProperties: new BasicProperties()
-                {
-                    Persistent = true,
-                    MessageId = evento.Id.ToString()
-                },
-                body: Encoding.UTF8.GetBytes(evento.Contenuto),
-                cancellationToken: cancellationToken
-            );
+            foreach (var evento in eventiPendenti)
+            {
+                await channel.BasicPublishAsync(
+                    exchange: configuration["RabbitMQ:ExchangeName"]!,
+                    routingKey: evento.Tipo,
+                    mandatory: true,
+                    basicProperties: new BasicProperties()
+                    {
+                        Persistent = true,
+                        MessageId = evento.Id.ToString()
+                    },
+                    body: Encoding.UTF8.GetBytes(evento.Contenuto),
+                    cancellationToken: cancellationToken
+                );
 
-            evento.MarcaCompletato();
+                evento.MarcaCompletato();
+            }
+
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
-
-        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

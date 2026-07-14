@@ -7,7 +7,7 @@ namespace OrderManagementUserService.Database;
 
 public class UserServiceDbContext(IConfiguration configuration) : OrderManagementDbContext(configuration)
 {
-    public DbSet<Utente> Utenti { get; private set; }
+    public DbSet<Utente> Utenti { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

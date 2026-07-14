@@ -1,3 +1,4 @@
+using OrderManagementCommon.Events;
 using OrderManagementCommon.Models;
 
 namespace OrderManagementUserService.Models;
@@ -6,7 +7,7 @@ public record Password(string Value);
 public record Credenziali(string Username, Password Password);
 public record Generalita(string Nome, string Cognome);
 
-public abstract class Utente
+public abstract class Utente : AggregateRoot
 {
 
     public Utente(Credenziali credenziali, Generalita generalita, IdUtente idUtente)
@@ -41,6 +42,9 @@ public class Customer : Utente
 }
 public class DeliveryGuy : Utente
 {
-    public DeliveryGuy(Credenziali credenziali, Generalita generalita) : base(credenziali, generalita, new IdDeliveryGuy(Guid.NewGuid())) { }
+    public DeliveryGuy(Credenziali credenziali, Generalita generalita) : base(credenziali, generalita, new IdDeliveryGuy(Guid.NewGuid()))
+    {
+        AddDomainEvent(new DeliveryGuyCreatoEvent((IdDeliveryGuy)Id));
+    }
     private DeliveryGuy() { }
 }
