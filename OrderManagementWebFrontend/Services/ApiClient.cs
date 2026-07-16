@@ -5,17 +5,9 @@ using OrderManagementWebFrontend.Models;
 
 namespace OrderManagementWebFrontend.Services;
 
-public abstract class ApiClient
+public abstract class ApiClient(string baseUrl)
 {
-    private HttpClient _http;
-
-    public ApiClient(string baseUrl)
-    {
-        _http = new HttpClient()
-        {
-            BaseAddress = new Uri(baseUrl)
-        };
-    }
+    private HttpClient _http = new HttpClient();
 
     private async Task HandleErrori(HttpResponseMessage res)
     {
@@ -32,7 +24,7 @@ public abstract class ApiClient
 
     public async Task<T> GetAsync<T>(string url)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}{url}");
         request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
 
         var response = await _http.SendAsync(request);
@@ -44,7 +36,7 @@ public abstract class ApiClient
 
     public async Task<TResponse?> PostAsync<TRequest, TResponse>(string url, TRequest body)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, url)
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}{url}")
         {
             Content = JsonContent.Create(body)
         };
@@ -61,7 +53,7 @@ public abstract class ApiClient
 
     public async Task PostAsync<TRequest>(string url, TRequest body)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, url)
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}{url}")
         {
             Content = JsonContent.Create(body)
         };

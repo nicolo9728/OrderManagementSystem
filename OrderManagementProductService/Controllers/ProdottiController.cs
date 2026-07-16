@@ -13,7 +13,7 @@ public record ProdottoInserireForm(string Nome, int QuantitaDisponibile);
 public record AcquistaProdottoForm(int Quantita, string Indirizzo);
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/products/[controller]")]
 public class ProdottiController(ProductServiceDbContext context, IdUtente idUtente) : ControllerBase
 {
     public async Task<IActionResult> GetProdotti()

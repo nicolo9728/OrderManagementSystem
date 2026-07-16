@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+      - name: product-service
+        image: order-management/product-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ConnectionStrings__Postgresql
+          value: "Server=yugabyte;Database=ProductOrderManagment;User Id=yugabyte;Password=yugabyte;Port=5433;"
+        - name: RabbitMQ__Hostname
+          value: "rabbitmq"
+        - name: RabbitMQ__Username
+          value: "guest"
+        - name: RabbitMQ__Password
+          value: "guest"
+        - name: RabbitMQ__QueueName
+          value: "ProductQueue"
+        - name: RabbitMQ__ExchangeName
+          value: "domain.events.exchange"
+        - name: Jwt__Key
+          value: "adnawi3on32iorn324iotn345itn3i4ngkwfwef.wr3.42r43.t234.23fdj230fju239fj239fuj4389fjh34dawd3q2d23r324r23r"
+        - name: Jwt__Issuer
+          value: "mysite.com"
+        - name: Jwt__Audience
+          value: "mysite.com"
+        - name: Frontend__Domain
+          value: "http://localhost:5004"

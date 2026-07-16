@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: e-commerce-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /api/users(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: user-service
+            port:
+              number: 5001
+
+      - path: /api/products(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: product-service
+            port:
+              number: 5002
+
+      - path: /api/delivery(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: delivery-service
+            port:
+              number: 5003
+
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: webfrontend
+            port:
+              number: 8080

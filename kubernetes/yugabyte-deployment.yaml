@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yugabyte
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yugabyte
+  template:
+    metadata:
+      labels:
+        app: yugabyte
+    spec:
+      containers:
+      - name: yugabyte
+        image: yugabytedb/yugabyte:latest
+        command: ["/home/yugabyte/bin/yugabyted", "start", "--daemon=false"]
+        ports:
+        - containerPort: 5433
+        - containerPort: 15433
+        volumeMounts:
+        - name: yugabyte-storage
+          mountPath: /home/yugabyte/var
+      volumes:
+      - name: yugabyte-storage
+        persistentVolumeClaim:
+          claimName: yugabyte-pvc

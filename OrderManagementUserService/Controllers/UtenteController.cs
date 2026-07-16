@@ -13,7 +13,7 @@ using OrderManagementViewmodels.Utenti;
 namespace OrderManagementUserService.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/users/[controller]")]
 public class UtenteController(UserServiceDbContext context, IConfiguration configuration, IHttpContextAccessor httpContext, IdUtente idUtenteLoggato) : ControllerBase
 {
     public record LoginForm(string Username, string Password);

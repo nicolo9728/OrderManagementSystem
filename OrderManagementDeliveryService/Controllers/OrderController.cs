@@ -11,7 +11,7 @@ namespace OrderManagementDeliveryService.Controllers;
 public record OrdiceCancellatoForm();
 
 [Controller]
-[Route("[controller]")]
+[Route("api/delivery/[controller]")]
 public class OrderController(DeliveryServiceDbContext context, IdUtente idUtente) : ControllerBase
 {
 
