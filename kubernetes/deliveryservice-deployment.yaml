@@ -21,7 +21,7 @@ spec:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
         - name: ConnectionStrings__Postgresql
-          value: "Server=yugabyte;Database=DeliveryOrderManagment;User Id=yugabyte;Password=yugabyte;Port=5433;"
+          value: "Server=yb-tservers.yb-demo.svc.cluster.local;Database=DeliveryOrderManagment;User Id=yugabyte;Password=yugabyte;Port=5433;"
         - name: RabbitMQ__Hostname
           value: "rabbitmq"
         - name: RabbitMQ__Username

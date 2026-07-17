@@ -12,10 +12,22 @@ public static class DatabaseMigration
             var services = app.Services.CreateScope();
             var context = services.ServiceProvider.GetService<OrderManagementDbContext>();
 
-            context!.Database.EnsureCreated();
-            if (context.Database.GetAppliedMigrations().Any())
+            bool fine = false;
+            while (!fine)
             {
-                context.Database.Migrate();
+                try
+                {
+                    context!.Database.EnsureCreated();
+                    if (context.Database.GetAppliedMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
+                    fine = true;
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(500);
+                }
             }
         }
     }

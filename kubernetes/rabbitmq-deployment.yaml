@@ -1,32 +1,24 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-default-user
+  namespace: default
+type: Opaque
+stringData:
+  default_user.conf: |
+    default_user = guest
+    default_pass = guest
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
 metadata:
   name: rabbitmq
+  namespace: default
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: rabbitmq
-  template:
-    metadata:
-      labels:
-        app: rabbitmq
-    spec:
-      containers:
-      - name: rabbitmq
-        image: rabbitmq:3-management
-        ports:
-        - containerPort: 5672
-        - containerPort: 15672
-        env:
-        - name: RABBITMQ_DEFAULT_USER
-          value: "guest"
-        - name: RABBITMQ_DEFAULT_PASS
-          value: "guest"
-        volumeMounts:
-        - name: rabbitmq-storage
-          mountPath: /var/lib/rabbitmq
-      volumes:
-      - name: rabbitmq-storage
-        persistentVolumeClaim:
-          claimName: rabbitmq-pvc
+  persistence:
+    storageClassName: standard
+    storage: 10Gi
+  secretBackend:
+    externalSecret:
+      name: rabbitmq-default-user
