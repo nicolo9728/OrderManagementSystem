@@ -11,42 +11,55 @@ public class EventPublisherWorker(IConfiguration configuration, IServiceProvider
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory()
+        //il while true è dovuto al fatto che all'inizio la coda di rabbitmq potrebbe non essere ancora attiva in questo modo evito che l'app crashi
+        while (true)
         {
-            HostName = configuration["RabbitMQ:Hostname"]!,
-            UserName = configuration["RabbitMQ:Username"]!,
-            Password = configuration["RabbitMQ:Password"]!
-        };
-
-        using var connection = await factory.CreateConnectionAsync(stoppingToken);
-        var channel = await connection.CreateChannelAsync(
-            new CreateChannelOptions(
-                publisherConfirmationsEnabled: true,
-                publisherConfirmationTrackingEnabled: true), stoppingToken);
-
-        //Dichiara l'exchange nel caso non sia gia creato
-        await channel.ExchangeDeclareAsync(
-            exchange: configuration["RabbitMQ:ExchangeName"]!,
-            type: ExchangeType.Topic,
-            durable: true,
-            autoDelete: false,
-            cancellationToken: stoppingToken
-        );
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            //Per ogni messaggio nella tabella dei messaggi del database viene pubblicato il messaggio nella coda
             try
             {
-                await PublishPendingEventsAsync(channel, stoppingToken);
-            }
-            catch (Exception err)
-            {
-                Console.WriteLine(err.Message);
-            }
+                var factory = new ConnectionFactory()
+                {
+                    HostName = configuration["RabbitMQ:Hostname"]!,
+                    UserName = configuration["RabbitMQ:Username"]!,
+                    Password = configuration["RabbitMQ:Password"]!
+                };
 
-            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                using var connection = await factory.CreateConnectionAsync(stoppingToken);
+                var channel = await connection.CreateChannelAsync(
+                    new CreateChannelOptions(
+                        publisherConfirmationsEnabled: true,
+                        publisherConfirmationTrackingEnabled: true), stoppingToken);
+
+                //Dichiara l'exchange nel caso non sia gia creato
+                await channel.ExchangeDeclareAsync(
+                    exchange: configuration["RabbitMQ:ExchangeName"]!,
+                    type: ExchangeType.Topic,
+                    durable: true,
+                    autoDelete: false,
+                    cancellationToken: stoppingToken
+                );
+
+
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    //Per ogni messaggio nella tabella dei messaggi del database viene pubblicato il messaggio nella coda
+                    try
+                    {
+                        await PublishPendingEventsAsync(channel, stoppingToken);
+                    }
+                    catch (Exception err)
+                    {
+                        Console.WriteLine(err.Message);
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                }
+            }
+            catch (Exception)
+            {
+                await Task.Delay(1000, stoppingToken);
+            }
         }
+
     }
 
     private async Task PublishPendingEventsAsync(IChannel channel, CancellationToken cancellationToken)
