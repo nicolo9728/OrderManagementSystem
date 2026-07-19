@@ -3,6 +3,11 @@
 @using OrderManagementViewmodels.Prodotti
 @inject ApiClientProdotti api;
 
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <button @onclick="()=>aggiungiProdotto = true">Aggiungi prodotto</button>
+    </Authorized>
+</AuthorizeView>
 <div class="table-container">
     <table>
         <thead>
@@ -21,7 +26,7 @@
                     <td>
                         <AuthorizeView Roles="Customer">
                             <Authorized>
-                                <button @onclick="() => SelezionaProdotto(prodotto)">Compra</button>
+                                <button @onclick="() => prodottoSelezionato = prodotto">Compra</button>
                             </Authorized>
                             <NotAuthorized>
                                 <button disabled>Loggati come customer</button>
@@ -37,13 +42,28 @@
 {
     <div class="window-container">
         <div class="window">
-            <button class="window-close-button" @onclick="()=>prodottoSelezionato = null">X</button>
-            <form @onsubmit="()=>Acquista()">
+            <button class="window-close-button" @onclick="() => prodottoSelezionato = null">X</button>
+            <form @onsubmit="() => Acquista()">
                 <h1>Acquista @prodottoSelezionato.Nome</h1>
-                <p>@errore</p>
+                <p>@erroreAcquisto</p>
                 <p>Quantita: <input type="number" @bind="quantitaSelezionata" required min="1"></p>
                 <p>Indirizzo spedizione: <input type="text" required @bind="indirizzo"></p>
                 <button>Acquista</button>
+            </form>
+        </div>
+    </div>
+}
+@if (aggiungiProdotto)
+{
+    <div class="window-container">
+        <div class="window">
+            <button class="window-close-button" @onclick="() => aggiungiProdotto = false">X</button>
+            <form @onsubmit="AggiungiProdotto">
+                <h1>Aggiungi prodotto</h1>
+                <p>@erroreAggiuntaProdotto</p>
+                <p>Nome: <input type="text" @bind="nomeProdotto" required></p>
+                <p>Quantita: <input type="number" min="1" @bind="quantitaDisponibile" required></p>
+                <button>Aggiungi</button>
             </form>
         </div>
     </div>
@@ -52,35 +72,50 @@
 @code {
     List<ProdottoViewModel> prodotti = [];
     ProdottoViewModel? prodottoSelezionato = null;
-    string errore = "";
+    string erroreAcquisto = "", erroreAggiuntaProdotto = "";
     string indirizzo = "";
     int quantitaSelezionata = 1;
+    bool aggiungiProdotto = false;
+
+    string nomeProdotto = "";
+    int quantitaDisponibile = 0;
 
     private async Task RefreshProdotti()
         => prodotti = await api.GetAsync<List<ProdottoViewModel>>("/Prodotti");
 
     protected override async Task OnInitializedAsync()
-    {
-       await RefreshProdotti();
-    }
+        => await RefreshProdotti();
+    
+    public async Task AggiungiProdotto(){
+        try{
+            await api.PostAsync("/Prodotti", new {
+                Nome = nomeProdotto,
+                QuantitaDisponibile = quantitaDisponibile
+            });
 
-    public async Task SelezionaProdotto(ProdottoViewModel prodotto)
-    {
-        prodottoSelezionato = prodotto;
+            await RefreshProdotti();
+            aggiungiProdotto = false;
+        }
+        catch(Exception err){
+            erroreAggiuntaProdotto = err.Message;
+        }
     }
 
     public async Task Acquista()
     {
-        try{
-            await api.PostAsync<dynamic>($"/Prodotti/{prodottoSelezionato!.IdProdotto}/Acquista", new {
+        try
+        {
+            await api.PostAsync<dynamic>($"/Prodotti/{prodottoSelezionato!.IdProdotto}/Acquista", new
+            {
                 Quantita = quantitaSelezionata,
                 Indirizzo = indirizzo
             });
             prodottoSelezionato = null;
             await RefreshProdotti();
         }
-        catch(Exception err){
-            errore = err.Message;
+        catch (Exception err)
+        {
+            erroreAcquisto = err.Message;
         }
     }
 }
