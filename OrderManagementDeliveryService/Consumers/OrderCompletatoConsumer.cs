@@ -9,7 +9,7 @@ public class OrderCompletatoConsumer(DeliveryServiceDbContext context) : IEventC
 {
     public async Task Consume(OrderCompletatoEvent arg, CancellationToken cancellationToken)
     {
-        using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        using var transaction = await context.Database.BeginTransactionAsync(isolationLevel: System.Data.IsolationLevel.Serializable, cancellationToken);
         Order order = await context.Ordini.Where((o)=>o.Id == arg.Id).FirstAsync(cancellationToken);
         
         if(order.IsDeliveryGuyNotified)

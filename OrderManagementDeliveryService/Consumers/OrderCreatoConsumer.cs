@@ -12,23 +12,23 @@ public class OrderCreatoConsumer(DeliveryServiceDbContext context) : IEventConsu
 
     private async Task<DeliveryGuy> GetDeliveryGuyWithLessOrderAssigned()
         => await context.DeliveryGuys
-            .OrderBy((d)=>d.NumeroConsegneAttive)
+            .OrderBy((d) => d.NumeroConsegneAttive)
             .Take(1)
             .FirstAsync();
 
     public async Task Consume(OrderCreatoEvent arg, CancellationToken cancellationToken)
     {
-        Order? order = await context.Ordini.Where((o)=>o.Id == arg.Id).FirstOrDefaultAsync(cancellationToken);
+        Order? order = await context.Ordini.Where((o) => o.Id == arg.Id).FirstOrDefaultAsync(cancellationToken);
 
-        if(order == null)
+        if (order == null)
             return;
-        
-        using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+
+        using var transaction = await context.Database.BeginTransactionAsync(isolationLevel: System.Data.IsolationLevel.Serializable, cancellationToken);
         var deliveryGuyDaAssegnare = await GetDeliveryGuyWithLessOrderAssigned();
 
         order.TryAssegna(deliveryGuyDaAssegnare.Id);
 
-        if(order.Status is OrderAssegnato)
+        if (order.Status is OrderAssegnato)
             deliveryGuyDaAssegnare.SegnalaNuovaConsegna();
 
         await context.SaveChangesAsync(cancellationToken);

@@ -24,7 +24,7 @@ public class EventPublisherWorker(IConfiguration configuration, IServiceProvider
                 publisherConfirmationsEnabled: true,
                 publisherConfirmationTrackingEnabled: true), stoppingToken);
 
-
+        //Dichiara l'exchange nel caso non sia gia creato
         await channel.ExchangeDeclareAsync(
             exchange: configuration["RabbitMQ:ExchangeName"]!,
             type: ExchangeType.Topic,
@@ -35,6 +35,7 @@ public class EventPublisherWorker(IConfiguration configuration, IServiceProvider
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            //Per ogni messaggio nella tabella dei messaggi del database viene pubblicato il messaggio nella coda
             try
             {
                 await PublishPendingEventsAsync(channel, stoppingToken);
@@ -61,18 +62,20 @@ public class EventPublisherWorker(IConfiguration configuration, IServiceProvider
 
         if (eventiPendenti.Count > 0)
         {
+            //per ogni evento nella tabella degli eventi del database
             foreach (var evento in eventiPendenti)
             {
+                //pubblico l'evento nel database
                 await channel.BasicPublishAsync(
                     exchange: configuration["RabbitMQ:ExchangeName"]!,
-                    routingKey: evento.Tipo,
-                    mandatory: true,
+                    routingKey: evento.Tipo, //la chiave è in base al Tipo dell'evento
+                    mandatory: true, //garantisce che il messaggio non vada perso nel caso rabbitmq non riesca ad instradarlo subito
                     basicProperties: new BasicProperties()
                     {
                         Persistent = true,
                         MessageId = evento.Id.ToString()
                     },
-                    body: Encoding.UTF8.GetBytes(evento.Contenuto),
+                    body: Encoding.UTF8.GetBytes(evento.Contenuto),//il body del messaggio e la serializzazione in json dell'evento
                     cancellationToken: cancellationToken
                 );
 

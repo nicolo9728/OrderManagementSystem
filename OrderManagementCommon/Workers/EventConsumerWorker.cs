@@ -28,7 +28,7 @@ public class EventConsumerWorker(IConfiguration configuration, IServiceProvider 
         var queueName = configuration["RabbitMQ:QueueName"]!;
         var exchangeName = configuration["RabbitMQ:ExchangeName"]!;
 
-
+        //Dichiara l'exchange nel caso non sia gia creato
         await channel.ExchangeDeclareAsync(
             exchange: exchangeName,
             type: ExchangeType.Topic,
@@ -37,21 +37,22 @@ public class EventConsumerWorker(IConfiguration configuration, IServiceProvider 
             cancellationToken: stoppingToken
         );
 
-
+        //Dichiara la propria coda
         await channel.QueueDeclareAsync(
             queue: queueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
+            durable: true, //per fare in modo che la coda sopravvia al riavvio del server
+            exclusive: false, //permette alla coda di essere utilizzata da piu consumer
+            autoDelete: false, //la coda non viene eliminata quando tutti i consumer vengono disconnessi
             arguments: null,
             cancellationToken: stoppingToken
         );
 
 
+        //effettuo il binding della coda con l'exchange
         await channel.QueueBindAsync(
             queue: queueName,
             exchange: exchangeName,
-            routingKey: "#",
+            routingKey: "#", //significa che sono interessato a tutti i messaggi
             cancellationToken: stoppingToken
         );
 
@@ -62,23 +63,25 @@ public class EventConsumerWorker(IConfiguration configuration, IServiceProvider 
         {
             try
             {
+                //Per ogni messaggio nella coda
                 var body = ea.Body.ToArray();
                 var messageJson = Encoding.UTF8.GetString(body);
                 var routingKey = ea.RoutingKey;
 
-
+                //gestisco il suo evento
                 await GestisciEvento(routingKey, messageJson, stoppingToken);
 
-
+                //Se ha successo mando un ACK alla coda per dirgli che e stato processato correttamente
                 await channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
             }
             catch (Exception)
             {
+                //Dico che ce stato un errore e che dovro riprovare
                 await channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
             }
         };
 
-
+        //viene collegato il consumer
         await channel.BasicConsumeAsync(
             queue: queueName,
             autoAck: false,
