@@ -6,94 +6,21 @@ services:
     build:
       context: .
       dockerfile: OrderManagementUserService/Dockerfile
-    ports:
-      - "5001:8080"
-    depends_on:
-      - yugabyte
-      - rabbitmq
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__Postgresql: "Server=yugabyte;Database=UserOrderManagment;User Id=yugabyte;Password=yugabyte;Port=5433;"
-      RabbitMQ__Hostname: "rabbitmq"
-      RabbitMQ__Username: "guest"
-      RabbitMQ__Password: "guest"
-      RabbitMQ__QueueName: "UserQueue"
-      RabbitMQ__ExchangeName: "domain.events.exchange"
-      Jwt__Key: "adnawi3on32iorn324iotn345itn3i4ngkwfwef.wr3.42r43.t234.23fdj230fju239fj239fuj4389fjh34dawd3q2d23r324r23r"
-      Jwt__Issuer: "mysite.com"
-      Jwt__Audience: "mysite.com"
-      Frontend__Domain: "http://localhost:5004"
 
   ProductService:
     image: order-management/product-service:latest
     build:
       context: .
       dockerfile: OrderManagementProductService/Dockerfile
-    ports:
-      - "5002:8080"
-    depends_on:
-      - yugabyte
-      - rabbitmq
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__Postgresql: "Server=yugabyte;Database=ProductOrderManagment;User Id=yugabyte;Password=yugabyte;Port=5433;"
-      RabbitMQ__Hostname: "rabbitmq"
-      RabbitMQ__Username: "guest"
-      RabbitMQ__Password: "guest"
-      RabbitMQ__QueueName: "ProductQueue"
-      RabbitMQ__ExchangeName: "domain.events.exchange"
-      Jwt__Key: "adnawi3on32iorn324iotn345itn3i4ngkwfwef.wr3.42r43.t234.23fdj230fju239fj239fuj4389fjh34dawd3q2d23r324r23r"
-      Jwt__Issuer: "mysite.com"
-      Jwt__Audience: "mysite.com"
-      Frontend__Domain: "http://localhost:5004"
 
   DeliveryService:
     image: order-management/delivery-service:latest
     build:
       context: .
       dockerfile: OrderManagementDeliveryService/Dockerfile
-    ports:
-      - "5003:8080"
-    depends_on:
-      - yugabyte
-      - rabbitmq
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__Postgresql: "Server=yugabyte;Database=DeliveryOrderManagment;User Id=yugabyte;Password=yugabyte;Port=5433;"
-      RabbitMQ__Hostname: "rabbitmq"
-      RabbitMQ__Username: "guest"
-      RabbitMQ__Password: "guest"
-      RabbitMQ__QueueName: "DeliveryQueue"
-      RabbitMQ__ExchangeName: "domain.events.exchange"
-      Jwt__Key: "adnawi3on32iorn324iotn345itn3i4ngkwfwef.wr3.42r43.t234.23fdj230fju239fj239fuj4389fjh34dawd3q2d23r324r23r"
-      Jwt__Issuer: "mysite.com"
-      Jwt__Audience: "mysite.com"
-      Frontend__Domain: "http://localhost:5004"
 
   FrontendService:
     image: order-management/frontend-service:latest
     build:
       context: .
       dockerfile: OrderManagementWebFrontend/Dockerfile
-    ports:
-      - "5004:8080"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-
-  yugabyte:
-    image: yugabytedb/yugabyte:latest
-    container_name: yugabyte
-    ports:
-      - "5433:5433"
-      - "15433:15433"
-    command: ["/home/yugabyte/bin/yugabyted", "start", "--daemon=false"]
