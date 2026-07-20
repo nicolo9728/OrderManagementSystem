@@ -19,9 +19,7 @@ kubectl apply -f https://github.com/rabbitmq/cluster-operator/releases/latest/do
 
 # 4. Generare il database
 
-kubectl port-forward yb-master-0 -n yb-demo 7000:7000
-
-Usare qualunque software compatibile con postgres per collegarsi al database (Username: yugabyte, Password: yugabyte).
+Usare qualunque software compatibile con postgres per collegarsi al database (Username: yugabyte, Password: yugabyte, Porta: 5433).
 
 Nello UserOrderManagement ce una tabella Utenti
 
