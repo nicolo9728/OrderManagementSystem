@@ -21,9 +21,9 @@ kubectl apply -f https://github.com/rabbitmq/cluster-operator/releases/latest/do
 
 Usare qualunque software compatibile con postgres per collegarsi al database (Username: yugabyte, Password: yugabyte, Porta: 5433).
 
-Nello UserOrderManagement ce una tabella Utenti
-
 lo script per ogni database e dentro a database.sql
+
+Nello UserOrderManagement ce una tabella Utenti. Carica l'admin.
 
 INSERT Into "Utenti" ("Id", "Ruolo", "Username", "Password", "Cognome", "Nome")
     VALUES ('ec978f28-39b1-4cb1-8220-0bf06d559fe6', 'Admin', 'admin', '$2a$12$Y5HSIqdV5E1racEW64zp1OE4uG.WZd0dtfrbddtV2YMva.am0OBG6', 'Prova', 'Prova')
