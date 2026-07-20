@@ -42,6 +42,9 @@ INSERT Into "Utenti" ("Id", "Ruolo", "Username", "Password", "Cognome", "Nome")
 
 (La password è 1234)
 
+# 7. Inserire almeno un deliveryguy
+
+Entrare come admin con quelle credenziali, entrane nella lista utenti e aggiungere il deliveryguy
 
 # 7. (Opzionale) Altri comandi utili
 kubectl rollout restart deployment
