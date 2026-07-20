@@ -1,8 +1,6 @@
 #Script per creare il database DeliveryOrderManagment 
 CREATE DATABASE "DeliveryOrderManagment";
 
-\c "DeliveryOrderManagment"
-
 CREATE TABLE "Eventi" (
     "Id" UUID PRIMARY KEY,
     "Tipo" TEXT NOT NULL,
@@ -27,16 +25,12 @@ CREATE TABLE "Ordini" (
     "Tipo" TEXT NOT NULL,
     "MomentoAcquisto" TIMESTAMP WITH TIME ZONE NOT NULL,
     "IsDeliveryGuyNotified" BOOLEAN NOT NULL,
-    "Indirizzo" TEXT NOT NULL,
-
-    CONSTRAINT fk_prodotto_ordine FOREIGN KEY (IdProdotto) REFERENCES prodotti(Codice)
+    "Indirizzo" TEXT NOT NULL
 );
 
-\q
 #Script per creare il database ProductOrderManagment 
 
 CREATE DATABASE "ProductOrderManagment";
-\c "ProductOrderManagment"
 
 CREATE TABLE "Prodotti" (
     "Codice" UUID PRIMARY KEY,
