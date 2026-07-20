@@ -56,7 +56,7 @@ public class EventPublisherWorker(IConfiguration configuration, IServiceProvider
             }
             catch (Exception)
             {
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(100, stoppingToken);
             }
         }
 
