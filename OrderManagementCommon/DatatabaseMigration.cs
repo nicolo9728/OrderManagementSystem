@@ -18,7 +18,10 @@ public static class DatabaseMigration
                 try
                 {
                     context!.Database.EnsureCreated();
-                    context.Database.Migrate();
+                    if (context.Database.GetAppliedMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
                     fine = true;
                 }
                 catch (Exception)
