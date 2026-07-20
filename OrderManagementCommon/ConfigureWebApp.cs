@@ -67,8 +67,6 @@ public static class ConfigureWebApp
         {
             IConfiguration configuration = app.Services.GetService<IConfiguration>()!;
 
-            app.MigraDatabase();
-
             app.UseCors((options) =>
                 options
                     .AllowAnyHeader()
